@@ -1,0 +1,138 @@
+body {
+  overflow-y: hidden;
+}
+
+.golf-round {
+  padding: 1rem;
+  max-height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-selector {
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  z-index: 1000;
+  background-color: white;
+}
+
+.hole-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  z-index: 1000;
+}
+
+.hole-navigation button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 120px;
+}
+
+.hole-navigation button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.hole-navigation button:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+.hole-navigation h2 {
+  color: #2c3e50;
+  margin: 0;
+}
+
+.hole-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.hole-inputs label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+}
+
+.hole-inputs input {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  width: 100px;
+}
+
+.hole-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.par-selection {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.par-selection button {
+  padding: 12px 20px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  font-size: 16px;
+}
+
+.par-selection button.selected {
+  background-color: #4CAF50;
+  color: white;
+  border-color: #4CAF50;
+}
+
+.par-selection button:hover {
+  background-color: #f0f0f0;
+}
+
+.par-selection button.selected:hover {
+  background-color: #45a049;
+}
+
+.round-summary {
+  background-color: #e8f4f8;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #bdc3c7;
+}
+
+.round-summary h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 18px;
+}
+
+.round-summary p {
+  margin: 8px 0;
+  font-size: 16px;
+  color: #34495e;
+}

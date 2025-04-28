@@ -12,8 +12,13 @@
     "test:e2e:ui": "npx playwright test --ui"
   },
   "dependencies": {
+    "@astrojs/db": "^0.14.12",
     "@astrojs/react": "^4.2.5",
     "@astrojs/vercel": "^8.1.4",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.0.2",
+    "@mui/material": "^7.0.2",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "astro": "^5.7.5",

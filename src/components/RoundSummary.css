@@ -1,0 +1,88 @@
+.round-summary {
+    box-sizing: border-box;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding-bottom: 200px;
+}
+
+.round-summary h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.round-summary p {
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+.round-summary table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    table-layout: fixed;
+}
+
+.round-summary th,
+.round-summary td {
+    padding: 8px 4px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    word-break: break-word;
+}
+
+.round-summary th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+    position: sticky;
+    top: -20px;
+}
+
+/* Add touch-friendly hover states */
+.round-summary tr:not(.totals-row):active {
+    background-color: #f0f0f0;
+}
+
+/* Make the current hole more visible on mobile */
+.round-summary tr.current-hole {
+    background-color: #e6ffe6;
+    font-weight: bold;
+}
+
+.round-summary .totals-row {
+    font-weight: bold;
+    background-color: #f5f5f5;
+    position: sticky;
+    bottom: 0;
+}
+
+.round-summary .totals-row td {
+    border-top: 2px solid #999;
+    padding: 8px 4px;
+}
+
+
+.summary-stats {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+}
+
+.stat-label {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 5px;
+}
