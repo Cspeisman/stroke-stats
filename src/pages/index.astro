@@ -11,12 +11,9 @@ import Rounds from "../components/Rounds.astro";
 const session = await getSession(Astro.request);
 let round: RoundModel | undefined;
 let rounds: RoundModel[] = [];
-let user: typeof Users.$inferSelect[] | undefined;
-if (session?.user?.email) {
-  user = await db.select().from(Users).where(eq(Users.email, session.user.email)).limit(1);
-}
-if (user && user.length > 0) {
-    const roundService = new RoundService(new DBRoundRepository(), user[0].id);
+
+if (session?.user && session?.user.email) {
+    const roundService = new RoundService(new DBRoundRepository(), session?.user.email);
     round = await roundService.getActiveRound();
 	if (!round) { 
 		rounds = await roundService.getAllRounds();

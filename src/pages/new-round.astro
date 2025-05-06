@@ -2,12 +2,10 @@
 import { RoundService } from "../Round/RoundService";
 import { DBRoundRepository } from "../Round/DBRoundRepository";
 import { getSession } from "auth-astro/server";
-import { db, eq, Users } from "astro:db";
 
 const session = await getSession(Astro.request);
 const roundRepository = new DBRoundRepository();
-const user = await db.select().from(Users).where(eq(Users.email, session?.user?.email ?? '')).limit(1);
-const roundService = new RoundService(roundRepository, user[0]?.id ?? '');
+const roundService = new RoundService(roundRepository, session?.user?.email ?? '');
 
 if (Astro.request.method === "POST") {
     const formData = await Astro.request.formData();

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build --remote",
-    "preview": "astro preview",
+    "preview": "astro preview --remote",
     "astro": "astro",
     "test": "vitest",
     "test:e2e": "npx playwright test",

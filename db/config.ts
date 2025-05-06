@@ -1,12 +1,4 @@
-import { column, defineDb, defineTable, NOW } from 'astro:db';
-
-export const Users = defineTable({
-  columns: {
-    id: column.text({ primaryKey: true }),
-    email: column.text({ unique: true }),
-    createdAt: column.date({ default: NOW })
-  }
-});
+import { column, defineDb, defineTable, NOW } from "astro:db";
 
 export const Rounds = defineTable({
   columns: {
@@ -14,10 +6,10 @@ export const Rounds = defineTable({
     courseName: column.text(),
     date: column.date(),
     active: column.boolean({ default: true }),
-    userId: column.text({ references: () => Users.columns.id }),
+    userId: column.text(),
     score: column.number({ optional: true }),
-    createdAt: column.date({ default: NOW })
-  }
+    createdAt: column.date({ default: NOW }),
+  },
 });
 
 export const StrokeStats = defineTable({
@@ -31,10 +23,10 @@ export const StrokeStats = defineTable({
     strokes: column.number(),
     notes: column.text(),
     roundId: column.text({ references: () => Rounds.columns.id }),
-    createdAt: column.date({ default: NOW })
-  }
+    createdAt: column.date({ default: NOW }),
+  },
 });
 
 export default defineDb({
-  tables: { Users, Rounds, StrokeStats }
+  tables: { Rounds, StrokeStats },
 });

@@ -22,20 +22,4 @@ export default defineConfig({
       clientSecret: import.meta.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
-  callbacks: {
-    async signIn({ user }) {
-      if (user?.email) {
-        // Use the full URL for the auth callback
-        const baseUrl = getBaseUrl();
-        await fetch(`${baseUrl}/api/auth-callback`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: user.email }),
-        });
-      }
-      return true;
-    },
-  },
 });

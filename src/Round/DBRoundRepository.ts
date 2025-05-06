@@ -8,14 +8,15 @@ export class DBRoundRepository implements RoundRepository {
     userId: string,
     courseName: string
   ): Promise<RoundModel> {
+    console.log("userId", userId);
     const round = await db
       .insert(Rounds)
       .values({
         id: crypto.randomUUID(),
-        active: true,
-        userId: userId,
         courseName: courseName,
         date: new Date(),
+        active: true,
+        userId: userId,
       })
       .returning();
     const roundModel = RoundModel.convertFromRound(round[0]);
