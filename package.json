@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build --remote",
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest",
@@ -15,6 +15,7 @@
     "@astrojs/db": "^0.14.12",
     "@astrojs/react": "^4.2.5",
     "@astrojs/vercel": "^8.1.4",
+    "@auth/core": "^0.37.4",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.0.2",
@@ -22,6 +23,7 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "astro": "^5.7.5",
+    "auth-astro": "^4.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
@@ -30,6 +32,7 @@
     "@testing-library/react": "^16.3.0",
     "@types/node": "^22.15.2",
     "create-krew": "^0.0.36",
+    "jsdom": "^26.1.0",
     "vitest": "^3.1.2"
   }
 }

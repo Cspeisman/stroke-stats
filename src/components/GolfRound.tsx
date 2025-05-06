@@ -1,70 +1,76 @@
-import { useState, useEffect } from "react";
-import { Tabs, Tab, Box, IconButton } from "@mui/material";
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import {
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Tab,
+  Tabs,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from "@mui/material";
+import { useState } from "react";
+import type { HoleModel, RoundModel } from "../Round/Round";
 import "./GolfRound.css";
-import { RoundSummary } from "./RoundSummary";
 import { HoleInputs } from "./HoleInputs";
+import { RoundSummary } from "./RoundSummary";
 
 export type FairwayStatuses = "Hit" | "Missed" | "-";
 
-export interface HoleData {
-  hole: number;
-  score: number;
-  fairwayStatus: FairwayStatuses;
-  isTwoPuttOrLess: boolean;
-  isGreenInRegulation: boolean;
-  par: number;
+function RoundSummaryBar({ holes }: { holes: HoleModel[] }) {
+  const totalScore = holes.reduce((sum, hole) => sum + hole.strokes, 0);
+  const fairwaysHit = holes.filter(
+    (hole) => hole.fairwayStatus === "Hit"
+  ).length;
+  const greensInRegulation = holes.filter(
+    (hole) => hole.isGreenInRegulation
+  ).length;
+  const twoPuttOrLess = holes.filter((hole) => hole.isTwoPuttOrLess).length;
+
+  return (
+    <div className="round-summary-bar">
+      <div className="summary-item">
+        <span className="label">Score:</span>
+        <span className="value">{totalScore}</span>
+      </div>
+      <div className="summary-item">
+        <span className="label">Fairways:</span>
+        <span className="value">
+          {fairwaysHit}/{holes.length}
+        </span>
+      </div>
+      <div className="summary-item">
+        <span className="label">GIR:</span>
+        <span className="value">
+          {greensInRegulation}/{holes.length}
+        </span>
+      </div>
+      <div className="summary-item">
+        <span className="label">2-Putt or Less:</span>
+        <span className="value">
+          {twoPuttOrLess}/{holes.length}
+        </span>
+      </div>
+    </div>
+  );
 }
 
-export function GolfRound() {
-  const [currentHole, setCurrentHole] = useState(1);
-  const [holes, setHoles] = useState<HoleData[]>([]);
+export function GolfRound({ round }: { round: RoundModel }) {
+  const [currentHole, setCurrentHole] = useState(round.holes.length + 1);
+  const [holes, setHoles] = useState<HoleModel[]>(round.holes);
   const [currentHoleScore, setCurrentHoleScore] = useState<number>(0);
   const [fairwayStatus, setFairwayStatus] = useState<FairwayStatuses>("Missed");
   const [isTwoPuttOrLess, setIsTwoPuttOrLess] = useState(false);
   const [isGreenInRegulation, setIsGreenInRegulation] = useState(false);
   const [currentPar, setCurrentPar] = useState<number>(4);
   const [currentTab, setCurrentTab] = useState(0);
-
-  useEffect(() => {
-    const loadHoleData = async () => {
-      try {
-        const response = await fetch('/api/stroke-stats');
-        if (!response.ok) {
-          throw new Error('Failed to load stroke stats');
-        }
-        const data = await response.json();
-
-        // Transform the API data into HoleData format
-        const loadedHoles = data.map((item: any) => ({
-          hole: item.hole,
-          score: item.strokes,
-          fairwayStatus: item.hitFairway === true ? "Hit" : item.hitFairway === false ? "Missed" : "-",
-          isTwoPuttOrLess: item.twoPuttOrLess,
-          isGreenInRegulation: item.greenInRegulation,
-          par: item.par,
-        }));
-
-        setHoles(loadedHoles);
-
-        // If there's data, set the current hole to the last hole with data
-        if (loadedHoles.length > 0) {
-          const lastHole = loadedHoles[loadedHoles.length - 1];
-          setCurrentHole(lastHole.hole);
-          setCurrentHoleScore(lastHole.score);
-          setFairwayStatus(lastHole.fairwayStatus);
-          setIsTwoPuttOrLess(lastHole.isTwoPuttOrLess);
-          setIsGreenInRegulation(lastHole.isGreenInRegulation);
-          setCurrentPar(lastHole.par);
-        }
-      } catch (error) {
-        console.error('Error loading stroke stats:', error);
-      }
-    };
-
-    loadHoleData();
-  }, []);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [showEndRoundDialog, setShowEndRoundDialog] = useState(false);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setCurrentTab(newValue);
@@ -87,6 +93,48 @@ export function GolfRound() {
     saveCurrentHoleData(score);
     if (currentHole < 18) {
       advanceToNextHole();
+    } else {
+      saveRoundData();
+    }
+  };
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleEndRound = () => {
+    handleMenuClose();
+    setShowEndRoundDialog(true);
+  };
+
+  const handleConfirmEndRound = () => {
+    setShowEndRoundDialog(false);
+    saveRoundData();
+  };
+
+  const handleCancelEndRound = () => {
+    setShowEndRoundDialog(false);
+  };
+
+  const saveRoundData = async () => {
+    try {
+      const response = await fetch("/api/end-round", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to end round");
+      }
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Error ending round:", error);
     }
   };
 
@@ -95,7 +143,7 @@ export function GolfRound() {
       const updatedHoles = [...prev];
       updatedHoles[currentHole - 1] = {
         hole: currentHole,
-        score,
+        strokes: score,
         fairwayStatus,
         isTwoPuttOrLess,
         isGreenInRegulation,
@@ -105,26 +153,32 @@ export function GolfRound() {
     });
 
     try {
-      const response = await fetch('/api/stroke-stats', {
-        method: 'POST',
+      const response = await fetch("/api/stroke-stats", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           hole: currentHole,
           par: currentPar,
           strokes: score,
-          hitFairway: fairwayStatus === "Hit" ? true : fairwayStatus === "Missed" ? false : null,
+          hitFairway:
+            fairwayStatus === "Hit"
+              ? true
+              : fairwayStatus === "Missed"
+              ? false
+              : null,
           twoPuttOrLess: isTwoPuttOrLess,
           greenInRegulation: isGreenInRegulation,
+          roundId: round.id,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save stroke stats');
+        throw new Error("Failed to save stroke stats");
       }
     } catch (error) {
-      console.error('Error saving stroke stats:', error);
+      console.error("Error saving stroke stats:", error);
     }
   };
 
@@ -134,7 +188,7 @@ export function GolfRound() {
     const existingHole = holes.find((h) => h.hole === targetHole);
 
     if (existingHole) {
-      setCurrentHoleScore(existingHole.score);
+      setCurrentHoleScore(existingHole.strokes);
       setFairwayStatus(existingHole.fairwayStatus);
       setIsTwoPuttOrLess(existingHole.isTwoPuttOrLess);
       setIsGreenInRegulation(existingHole.isGreenInRegulation);
@@ -155,7 +209,7 @@ export function GolfRound() {
       const existingHole = holes.find((h) => h.hole === targetHole);
 
       if (existingHole) {
-        setCurrentHoleScore(existingHole.score);
+        setCurrentHoleScore(existingHole.strokes);
         setFairwayStatus(existingHole.fairwayStatus);
         setIsTwoPuttOrLess(existingHole.isTwoPuttOrLess);
         setIsGreenInRegulation(existingHole.isGreenInRegulation);
@@ -172,17 +226,46 @@ export function GolfRound() {
 
   return (
     <div className="golf-round">
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          alignItems: "center",
+        }}
+      >
+        <div>
+          Course: <strong>{round.courseName}</strong>
+        </div>
+        <div style={{ justifySelf: "end" }}>
+          <IconButton onClick={handleMenuOpen} size="small">
+            <MoreHorizIcon />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handleEndRound}>End Round</MenuItem>
+          </Menu>
+        </div>
+      </div>
+      <div className="round-header">
+        <RoundSummaryBar holes={holes} />
+      </div>
       <div className="hole-navigation">
         <IconButton
-          style={{ backgroundColor: 'transparent' }}
+          style={{ backgroundColor: "transparent" }}
           onClick={handlePreviousHole}
           disabled={currentHole === 1}
         >
-          <ArrowBackIosIcon color={currentHole === 1 ? "disabled" : "action"} fontSize="large" />
+          <ArrowBackIosIcon
+            color={currentHole === 1 ? "disabled" : "action"}
+            fontSize="large"
+          />
         </IconButton>
         <h2>Hole {currentHole}</h2>
         <IconButton
-          style={{ backgroundColor: 'transparent' }}
+          style={{ backgroundColor: "transparent" }}
           onClick={advanceToNextHole}
           disabled={currentHole === 18}
         >
@@ -235,12 +318,39 @@ export function GolfRound() {
         <RoundSummary holes={holes} currentHole={currentHole} />
       )}
 
-      <Box className="tab-selector" sx={{ borderTop: 1, borderColor: 'divider', mt: 2 }}>
+      <Box
+        className="tab-selector"
+        sx={{ borderTop: 1, borderColor: "divider", mt: 2 }}
+      >
         <Tabs value={currentTab} onChange={handleTabChange} centered>
           <Tab label="Current Hole" />
           <Tab label="Round Summary" />
         </Tabs>
       </Box>
+
+      <Dialog
+        open={showEndRoundDialog}
+        onClose={handleCancelEndRound}
+        aria-labelledby="end-round-dialog-title"
+      >
+        <DialogTitle id="end-round-dialog-title">End Round</DialogTitle>
+        <DialogContent>
+          Are you sure you want to end your round? You haven't finished all 18
+          holes.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelEndRound} color="primary">
+            No
+          </Button>
+          <Button
+            onClick={handleConfirmEndRound}
+            color="primary"
+            variant="contained"
+          >
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

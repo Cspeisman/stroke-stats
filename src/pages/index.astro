@@ -1,16 +1,45 @@
 ---
+import { db, eq, Users } from "astro:db";
+import { getSession } from "auth-astro/server";
 import { GolfRound } from "../components/GolfRound";
+import { SignIn } from "../components/SignIn";
+import { RoundService } from "../Round/RoundService";
+import { DBRoundRepository } from "../Round/DBRoundRepository";
+import type { RoundModel } from "../Round/Round";
+import Rounds from "../components/Rounds.astro";
+
+const session = await getSession(Astro.request);
+let round: RoundModel | undefined;
+let rounds: RoundModel[] = [];
+let user: typeof Users.$inferSelect[] | undefined;
+if (session?.user?.email) {
+  user = await db.select().from(Users).where(eq(Users.email, session.user.email)).limit(1);
+}
+if (user && user.length > 0) {
+    const roundService = new RoundService(new DBRoundRepository(), user[0].id);
+    round = await roundService.getActiveRound();
+	if (!round) { 
+		rounds = await roundService.getAllRounds();
+	}
+}
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="manifest" href="/manifest.json" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Stroke Stats</title>
 	</head>
 	<body>
-		<GolfRound client:load />
+		{!session && <SignIn client:load />}
+		{session && 
+			<>
+				{round && <GolfRound client:load round={round} />}
+				{!round && <Rounds rounds={rounds} />}
+			</>
+		}
 	</body>
 </html>

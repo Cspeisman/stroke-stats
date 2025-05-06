@@ -1,0 +1,82 @@
+---
+import type { RoundModel } from "../Round/Round";
+
+interface RoundsProps {
+  rounds: RoundModel[];
+}
+
+const { rounds } = Astro.props as RoundsProps;
+---
+
+<div>
+  <div class="header">
+    <h1>Rounds</h1>
+    <a href="/new-round" class="new-round-btn">New Round</a>
+  </div>
+  <ul class="rounds-list">
+    {rounds.map((round) => (
+      <li class="round-item">
+        <div class="round-info">
+          <span class="course-name">{round.courseName}</span>
+          <span class="round-date">{round.date.toLocaleDateString()}</span>
+          <span class="round-score">Score: {round.score}</span>
+        </div>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .new-round-btn {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+
+  .new-round-btn:hover {
+    background-color: #0056b3;
+  }
+
+  .rounds-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .round-item {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .round-info {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .course-name {
+    font-weight: bold;
+  }
+
+  .round-date {
+    color: #666;
+  }
+
+  .round-score {
+    text-align: right;
+    font-weight: 500;
+  }
+</style>

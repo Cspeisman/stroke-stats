@@ -42,10 +42,10 @@ export const POST: APIRoute = async ({ request }) => {
             twoPuttOrLess: data.twoPuttOrLess ?? null,
             greenInRegulation: data.greenInRegulation ?? null,
             strokes: data.strokes,
-            notes: data.notes ?? ""
+            notes: data.notes ?? "",
+            roundId: data.roundId
         });
 
-        console.log(newStat);
         return new Response(JSON.stringify(newStat), {
             status: 201,
             headers: {

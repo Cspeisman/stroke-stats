@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="#4CAF50" />
+  
+  <!-- Golf ball -->
+  <circle cx="256" cy="256" r="100" fill="white" />
+  
+  <!-- Dimples on golf ball -->
+  <circle cx="200" cy="220" r="8" fill="#f0f0f0" />
+  <circle cx="240" cy="200" r="8" fill="#f0f0f0" />
+  <circle cx="280" cy="220" r="8" fill="#f0f0f0" />
+  <circle cx="260" cy="260" r="8" fill="#f0f0f0" />
+  <circle cx="220" cy="280" r="8" fill="#f0f0f0" />
+  
+  <!-- Score text -->
+  <text x="256" y="380" font-family="Arial" font-size="80" font-weight="bold" fill="white" text-anchor="middle">G</text>
+</svg> 
