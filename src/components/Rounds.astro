@@ -6,25 +6,88 @@ interface RoundsProps {
 }
 
 const { rounds } = Astro.props as RoundsProps;
+
+function calculateStats(holes: RoundModel['holes']) {
+  const fairwaysHit = holes.filter(hole => hole.fairwayStatus === "Hit").length;
+  const greensInRegulation = holes.filter(hole => hole.isGreenInRegulation).length;
+  const twoPuttOrLess = holes.filter(hole => hole.isTwoPuttOrLess).length;
+  const totalHoles = holes.length;
+  
+  return {
+    fairwaysHit,
+    greensInRegulation,
+    twoPuttOrLess,
+    totalHoles
+  };
+}
 ---
 
 <div>
   <div class="header">
     <h1>Rounds</h1>
-    <a href="/new-round" class="new-round-btn">New Round</a>
+    <div class="header-actions">
+      <div class="toggle-container">
+        <span class="toggle-label">Fractions</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggle-stats">
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label">Percentages</span>
+      </div>
+      <a href="/new-round" class="new-round-btn">New Round</a>
+    </div>
   </div>
-  <ul class="rounds-list">
-    {rounds.map((round) => (
-      <li class="round-item">
-        <div class="round-info">
-          <span class="course-name">{round.courseName}</span>
-          <span class="round-date">{round.date.toLocaleDateString()}</span>
-          <span class="round-score">Score: {round.score}</span>
-        </div>
-      </li>
-    ))}
-  </ul>
+  <div class="table-container">
+    <table class="rounds-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Course</th>
+          <th>Score</th>
+          <th>Fairways</th>
+          <th>GIR</th>
+          <th>2-Putt or Less</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rounds.map((round) => {
+          const stats = calculateStats(round.holes);
+          return (
+            <tr>
+              <td>{round.date.toLocaleDateString()}</td>
+              <td>{round.courseName}</td>
+              <td>{round.score}</td>
+              <td class="stat-value" data-fraction={`${stats.fairwaysHit}/${stats.totalHoles}`} data-percentage={`${Math.round((stats.fairwaysHit / stats.totalHoles) * 100)}%`}>
+                {stats.fairwaysHit}/{stats.totalHoles}
+              </td>
+              <td class="stat-value" data-fraction={`${stats.greensInRegulation}/${stats.totalHoles}`} data-percentage={`${Math.round((stats.greensInRegulation / stats.totalHoles) * 100)}%`}>
+                {stats.greensInRegulation}/{stats.totalHoles}
+              </td>
+              <td class="stat-value" data-fraction={`${stats.twoPuttOrLess}/${stats.totalHoles}`} data-percentage={`${Math.round((stats.twoPuttOrLess / stats.totalHoles) * 100)}%`}>
+                {stats.twoPuttOrLess}/{stats.totalHoles}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
 </div>
+
+<script>
+  const toggleBtn = document.getElementById('toggle-stats') as HTMLInputElement;
+  let showingPercentages = false;
+
+  toggleBtn?.addEventListener('change', () => {
+    showingPercentages = toggleBtn.checked;
+    
+    document.querySelectorAll('.stat-value').forEach(stat => {
+      const fraction = stat.getAttribute('data-fraction');
+      const percentage = stat.getAttribute('data-percentage');
+      stat.textContent = showingPercentages ? percentage : fraction;
+    });
+  });
+</script>
 
 <style>
   .header {
@@ -32,6 +95,68 @@ const { rounds } = Astro.props as RoundsProps;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .toggle-label {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+  }
+
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+
+  input:checked + .toggle-slider {
+    background-color: #007bff;
+  }
+
+  input:checked + .toggle-slider:before {
+    transform: translateX(26px);
   }
 
   .new-round-btn {
@@ -43,40 +168,43 @@ const { rounds } = Astro.props as RoundsProps;
     cursor: pointer;
     font-weight: 500;
     transition: background-color 0.2s;
+    text-decoration: none;
   }
 
   .new-round-btn:hover {
     background-color: #0056b3;
   }
 
-  .rounds-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .table-container {
+    overflow-x: auto;
   }
 
-  .round-item {
-    padding: 1rem;
+  .rounds-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .rounds-table th,
+  .rounds-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
     border-bottom: 1px solid #eee;
   }
 
-  .round-info {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 1rem;
-    align-items: center;
+  .rounds-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
   }
 
-  .course-name {
-    font-weight: bold;
+  .rounds-table tr:hover {
+    background-color: #f8f9fa;
   }
 
-  .round-date {
-    color: #666;
-  }
-
-  .round-score {
-    text-align: right;
+  .stat-value {
     font-weight: 500;
+    color: #333;
   }
 </style>
