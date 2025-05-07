@@ -20,6 +20,8 @@ body {
   padding: 0.5rem;
   z-index: 1000;
   background-color: white;
+  padding: 1rem;
+  padding-bottom: 1.5rem;
 }
 
 .hole-navigation {

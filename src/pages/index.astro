@@ -5,8 +5,7 @@ import { SignIn } from "../components/SignIn";
 import { RoundService } from "../Round/RoundService";
 import { DBRoundRepository } from "../Round/DBRoundRepository";
 import type { RoundModel } from "../Round/Round";
-import Rounds from "../components/Rounds.astro";
-
+import Rounds from "../components/Rounds.tsx";
 const session = await getSession(Astro.request);
 let round: RoundModel | undefined;
 let rounds: RoundModel[] = [];
@@ -25,7 +24,7 @@ if (session?.user && session?.user.email) {
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="manifest" href="/manifest.json" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="initial-scale=1, width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,12 +37,22 @@ if (session?.user && session?.user.email) {
 				--secondary-color: #e0917c;
 				--background-color: #f8f6f2;
 				--text-color: #2d2d2d;
+				--secondary-text-color: #979797;
 			}
 			body {
 				margin: 0;
 				padding: 0;
 				-webkit-font-smoothing: antialiased;
 				-moz-osx-font-smoothing: grayscale;
+			}
+			.secondary-text {
+				color: var(--secondary-text-color);
+				font-size: 0.75rem;
+			}
+			.primary-text {
+				color: var(--primary-color);
+				font-size: 1rem;
+				font-weight: 600;
 			}
 		</style>
 	</head>
@@ -52,7 +61,7 @@ if (session?.user && session?.user.email) {
 		{session && 
 			<>
 				{round && <GolfRound client:load round={round} />}
-				{!round && <Rounds rounds={rounds} />}
+				{!round && <Rounds rounds={rounds} client:load />}
 			</>
 		}
 	</body>

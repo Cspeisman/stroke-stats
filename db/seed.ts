@@ -1,4 +1,4 @@
-import { db, Rounds, StrokeStats, Users } from "astro:db";
+import { db, Rounds, StrokeStats } from "astro:db";
 
 // https://astro.build/db/seed
 export default async function seed() {
@@ -8,7 +8,7 @@ export default async function seed() {
     courseName: "Local Golf Course",
     date: new Date(),
     active: true,
-    userId: "user-1", // Assuming this user exists
+    userId: "cspeisman@gmail.com", // Assuming this user exists
     score: 42,
   });
 
