@@ -17,60 +17,51 @@ function calculateStats(holes: RoundModel['holes']) {
     fairwaysHit,
     greensInRegulation,
     twoPuttOrLess,
-    totalHoles
+    totalHoles,
+    holesWithFairways: holes.filter(hole => hole.par > 3).length,
   };
 }
 ---
 
-<div>
+<div style="padding: 1rem;">
   <div class="header">
-    <h1>Rounds</h1>
+    <h3>All Rounds</h3>
     <div class="header-actions">
-      <div class="toggle-container">
-        <span class="toggle-label">Fractions</span>
-        <label class="toggle-switch">
-          <input type="checkbox" id="toggle-stats">
-          <span class="toggle-slider"></span>
-        </label>
-        <span class="toggle-label">Percentages</span>
-      </div>
       <a href="/new-round" class="new-round-btn">New Round</a>
     </div>
   </div>
-  <div class="table-container">
-    <table class="rounds-table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Course</th>
-          <th>Score</th>
-          <th>Fairways</th>
-          <th>GIR</th>
-          <th>2-Putt or Less</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rounds.map((round) => {
-          const stats = calculateStats(round.holes);
-          return (
-            <tr>
-              <td>{round.date.toLocaleDateString()}</td>
-              <td>{round.courseName}</td>
-              <td>{round.score}</td>
-              <td class="stat-value" data-fraction={`${stats.fairwaysHit}/${stats.totalHoles}`} data-percentage={`${Math.round((stats.fairwaysHit / stats.totalHoles) * 100)}%`}>
-                {stats.fairwaysHit}/{stats.totalHoles}
-              </td>
-              <td class="stat-value" data-fraction={`${stats.greensInRegulation}/${stats.totalHoles}`} data-percentage={`${Math.round((stats.greensInRegulation / stats.totalHoles) * 100)}%`}>
-                {stats.greensInRegulation}/{stats.totalHoles}
-              </td>
-              <td class="stat-value" data-fraction={`${stats.twoPuttOrLess}/${stats.totalHoles}`} data-percentage={`${Math.round((stats.twoPuttOrLess / stats.totalHoles) * 100)}%`}>
-                {stats.twoPuttOrLess}/{stats.totalHoles}
-              </td>
-            </tr>
+  <div class="toggle-container">
+    <span class="toggle-label">Fractions</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="toggle-stats">
+      <span class="toggle-slider"></span>
+    </label>
+    <span class="toggle-label">Percentages</span>
+  </div>
+  <div>
+      {rounds.map((round) => {
+        const stats = calculateStats(round.holes);
+        return (
+          <div class="round-card">
+            <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.825rem', fontWeight: 'bold', color: '#2f5b40'}}>
+              <div>{round.courseName}</div>
+              <div>{round.date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+            </div>
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+              <div class="stat"><span style={{fontSize: '0.5rem', fontWeight: 'bold', }}>score: </span><span>{round.score}</span></div>
+              <div class="stat">
+                <span style={{fontSize: '0.5rem', fontWeight: 'bold', }}>Fairways: </span><span class="value" data-fraction={`${stats.fairwaysHit}/${stats.holesWithFairways}`} data-percentage={`${Math.round((stats.fairwaysHit / stats.holesWithFairways) * 100)}%`}>{stats.fairwaysHit}/{stats.holesWithFairways}</span>
+              </div>
+              <div class="stat">
+                <span style={{fontSize: '0.5rem', fontWeight: 'bold', }}>GIR: </span><span class="value" data-fraction={`${stats.greensInRegulation}/${stats.totalHoles}`} data-percentage={`${Math.round((stats.greensInRegulation / stats.totalHoles) * 100)}%`}>{stats.greensInRegulation}/{stats.totalHoles}</span>
+              </div>
+              <div class="stat">
+                <span style={{fontSize: '0.5rem', fontWeight: 'bold', }}>2-Putt or Less: </span><span class="value" data-fraction={`${stats.twoPuttOrLess}/${stats.totalHoles}`} data-percentage={`${Math.round((stats.twoPuttOrLess / stats.totalHoles) * 100)}%`}>{stats.twoPuttOrLess}</span>
+              </div>
+            </div>
+          </div>
           );
         })}
-      </tbody>
-    </table>
   </div>
 </div>
 
@@ -81,7 +72,7 @@ function calculateStats(holes: RoundModel['holes']) {
   toggleBtn?.addEventListener('change', () => {
     showingPercentages = toggleBtn.checked;
     
-    document.querySelectorAll('.stat-value').forEach(stat => {
+    document.querySelectorAll('.stat .value').forEach(stat => {
       const fraction = stat.getAttribute('data-fraction');
       const percentage = stat.getAttribute('data-percentage');
       stat.textContent = showingPercentages ? percentage : fraction;
@@ -161,7 +152,7 @@ function calculateStats(holes: RoundModel['holes']) {
 
   .new-round-btn {
     padding: 0.5rem 1rem;
-    background-color: #007bff;
+    background-color: #e0917c;
     color: white;
     border: none;
     border-radius: 4px;
@@ -172,39 +163,22 @@ function calculateStats(holes: RoundModel['holes']) {
   }
 
   .new-round-btn:hover {
-    background-color: #0056b3;
+    background-color: #c6816e;
   }
 
-  .table-container {
-    overflow-x: auto;
+  .round-card {
+    padding: 0.75rem;
+    background-color: #f8f6f2;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 
-  .rounds-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  .stat {
+    color: #2d2d2d;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    align-items: center;
+    justify-items: center;
   }
 
-  .rounds-table th,
-  .rounds-table td {
-    padding: 0.75rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-  }
-
-  .rounds-table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-    color: #333;
-  }
-
-  .rounds-table tr:hover {
-    background-color: #f8f9fa;
-  }
-
-  .stat-value {
-    font-weight: 500;
-    color: #333;
-  }
 </style>
