@@ -1,6 +1,7 @@
 import type { HoleModel, RoundModel } from "./Round";
 
 export interface RoundRepository {
+  deleteRound(roundId: string): Promise<boolean>;
   getAllRoundsForUser: (userId: string) => Promise<RoundModel[]>;
   getActiveRound: () => Promise<RoundModel | undefined>;
   createNewRound: (userId: string, courseName: string) => Promise<RoundModel>;
@@ -41,5 +42,9 @@ export class RoundService {
 
   async getAllRounds() {
     return await this.roundRepository.getAllRoundsForUser(this.userId);
+  }
+
+  async deleteRound(roundId: string) {
+    return await this.roundRepository.deleteRound(roundId);
   }
 }

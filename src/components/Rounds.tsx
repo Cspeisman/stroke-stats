@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import AddIcon from "@mui/icons-material/Add";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { Button, Menu, MenuItem } from "@mui/material";
+import React, { useState } from "react";
 import { RoundModel } from "../Round/Round";
+import { RoundCard } from "./RoundCard";
 import "./Rounds.css";
-import { Menu, MenuItem, Button } from "@mui/material";
 
 interface RoundsProps {
   rounds: RoundModel[];
@@ -22,23 +22,25 @@ const Rounds: React.FC<RoundsProps> = ({ rounds }) => {
     setAnchorEl(null);
   };
 
-  const calculateStats = (holes: RoundModel["holes"]) => {
-    const fairwaysHit = holes.filter(
-      (hole) => hole.fairwayStatus === "Hit"
-    ).length;
-    const greensInRegulation = holes.filter(
-      (hole) => hole.isGreenInRegulation
-    ).length;
-    const twoPuttOrLess = holes.filter((hole) => hole.isTwoPuttOrLess).length;
-    const totalHoles = holes.length;
+  const handleDelete = async (roundId: string) => {
+    try {
+      const response = await fetch(`/api/delete-round`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ roundId }),
+      });
 
-    return {
-      fairwaysHit,
-      greensInRegulation,
-      twoPuttOrLess,
-      totalHoles,
-      holesWithFairways: holes.filter((hole) => hole.par > 3).length,
-    };
+      if (!response.ok) {
+        throw new Error("Failed to delete round");
+      }
+
+      // Refresh the page to show updated rounds
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting round:", error);
+    }
   };
 
   return (
@@ -138,79 +140,14 @@ const Rounds: React.FC<RoundsProps> = ({ rounds }) => {
       </div>
 
       <div>
-        {rounds.map((round, index) => {
-          const stats = calculateStats(round.holes);
-          return (
-            <div key={index} className="round-card">
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div className="primary-text">{round.courseName}</div>
-                <div className="secondary-text">
-                  {round.date.toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </div>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div className="stat">
-                  <span
-                    className="secondary-text"
-                    style={{ fontWeight: "bold" }}
-                  >
-                    score:{" "}
-                  </span>
-                  <span className="primary-text">{round.score}</span>
-                </div>
-                <div className="stat">
-                  <span
-                    className="secondary-text"
-                    style={{ fontWeight: "bold" }}
-                  >
-                    Fairways:{" "}
-                  </span>
-                  <span className="value primary-text">
-                    {showingPercentages
-                      ? `${Math.round(
-                          (stats.fairwaysHit / stats.holesWithFairways) * 100
-                        )}%`
-                      : `${stats.fairwaysHit}/${stats.holesWithFairways}`}
-                  </span>
-                </div>
-                <div className="stat">
-                  <span
-                    className="secondary-text"
-                    style={{ fontWeight: "bold" }}
-                  >
-                    GIR:{" "}
-                  </span>
-                  <span className="value primary-text">
-                    {showingPercentages
-                      ? `${Math.round(
-                          (stats.greensInRegulation / stats.totalHoles) * 100
-                        )}%`
-                      : `${stats.greensInRegulation}/${stats.totalHoles}`}
-                  </span>
-                </div>
-                <div className="stat">
-                  <span
-                    className="secondary-text"
-                    style={{ fontWeight: "bold" }}
-                  >
-                    2-Putt or Less:{" "}
-                  </span>
-                  <span className="value primary-text">
-                    {showingPercentages
-                      ? `${Math.round(
-                          (stats.twoPuttOrLess / stats.totalHoles) * 100
-                        )}%`
-                      : `${stats.twoPuttOrLess}/${stats.totalHoles}`}
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {rounds.map((round, index) => (
+          <RoundCard
+            key={index}
+            round={round}
+            showingPercentages={showingPercentages}
+            onDelete={() => handleDelete(round.id)}
+          />
+        ))}
       </div>
     </div>
   );

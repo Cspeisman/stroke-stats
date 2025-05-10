@@ -39,6 +39,7 @@
   display: grid;
   grid-template-rows: auto 1fr;
   grid-gap: 0.5rem;
+  grid-template-columns: 1fr auto;
 }
 
 .stat {

@@ -64,4 +64,10 @@ export class DBRoundRepository implements RoundRepository {
       .where(eq(StrokeStats.roundId, roundId));
     return strokes.map(HoleModel.convertFromStrokeStat);
   }
+
+  async deleteRound(roundId: string): Promise<boolean> {
+    await db.delete(StrokeStats).where(eq(StrokeStats.roundId, roundId));
+    await db.delete(Rounds).where(eq(Rounds.id, roundId));
+    return true;
+  }
 }

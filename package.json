@@ -25,7 +25,8 @@
     "astro": "^5.7.5",
     "auth-astro": "^4.2.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-swipeable": "^7.0.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",

@@ -39,6 +39,11 @@ class FakeRoundRepository implements RoundRepository {
   async getStrokesFromRound(_roundId: string): Promise<HoleModel[]> {
     return this.strokes;
   }
+
+  async deleteRound(roundId: string): Promise<boolean> {
+    this.rounds = this.rounds.filter((round) => round.id !== roundId);
+    return true;
+  }
 }
 
 describe("RoundService", () => {
@@ -101,6 +106,19 @@ describe("RoundService", () => {
       await roundService.endRound();
       const result = await fakeRepository.getAllRoundsForUser(testUserId);
       expect(result[0].score).toBe(10);
+    });
+  });
+
+  describe("deleteRound", () => {
+    it("should delete a round", async () => {
+      const testRound = await fakeRepository.createNewRound(
+        testUserId,
+        "Test Course"
+      );
+      await roundService.deleteRound(testRound.id);
+      expect(await fakeRepository.getAllRoundsForUser(testUserId)).toHaveLength(
+        0
+      );
     });
   });
 });
