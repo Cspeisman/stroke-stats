@@ -6,6 +6,8 @@ import { RoundService } from "../Round/RoundService";
 import { DBRoundRepository } from "../Round/DBRoundRepository";
 import type { RoundModel } from "../Round/Round";
 import Rounds from "../components/Rounds.tsx";
+import { CircularProgress } from "@mui/material";
+let isLoading = true;
 const session = await getSession(Astro.request);
 let round: RoundModel | undefined;
 let rounds: RoundModel[] = [];
@@ -17,6 +19,7 @@ if (session?.user && session?.user.email) {
 		rounds = await roundService.getAllRounds();
 	}
 }
+isLoading = false;
 ---
 
 <html lang="en">
@@ -54,15 +57,31 @@ if (session?.user && session?.user.email) {
 				font-size: 1rem;
 				font-weight: 600;
 			}
+			.loading-container {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-height: 100vh;
+				background-color: var(--background-color);
+			}
 		</style>
 	</head>
 	<body>
-		{!session && <SignIn client:load />}
-		{session && 
+		{isLoading && (
+			<div class="loading-container">
+				<CircularProgress sx={{ color: 'var(--primary-color)' }} />
+			</div>
+		)}
+		{!isLoading && (
 			<>
-				{round && <GolfRound client:load round={round} />}
-				{!round && <Rounds rounds={rounds} client:load />}
+				{!session && <SignIn client:load />}
+				{session && 
+					<>
+						{round && <GolfRound client:load round={round} />}
+						{!round && <Rounds rounds={rounds} client:load />}
+					</>
+				}
 			</>
-		}
+		)}
 	</body>
 </html>
