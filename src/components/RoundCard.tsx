@@ -1,11 +1,13 @@
 import React, { useMemo, useState } from "react";
 import { RoundModel } from "../Round/Round";
 import { useSwipeable } from "react-swipeable";
+import ConfirmationButton from "./ConfirmationButton";
 
 interface RoundCardProps {
   round: RoundModel;
   showingPercentages: boolean;
   onDelete: () => void;
+  onEdit: () => void;
 }
 
 const calculateStats = (holes: RoundModel["holes"]) => {
@@ -82,7 +84,7 @@ export const RoundCard: React.FC<RoundCardProps> = ({
         className="round-card"
         {...swipeHandlers}
         style={{
-          transform: `translateX(${swipeProgress * -80}px)`,
+          transform: `translateX(${swipeProgress * -180}px)`,
           transition: isSwiping
             ? "none"
             : "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -146,33 +148,62 @@ export const RoundCard: React.FC<RoundCardProps> = ({
           </div>
         </div>
       </div>
-      <button
-        onClick={onDelete}
-        className="delete-button"
+
+      <div
         style={{
-          backgroundColor: "#ff4444",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          marginLeft: "8px",
-          width: `${swipeProgress * 80}px`,
-          transition: isSwiping
-            ? "none"
-            : "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           position: "absolute",
           right: 0,
           top: "50%",
           transform: "translateY(-50%)",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          opacity: swipeProgress,
-          willChange: "width, opacity",
+          display: "flex",
+          gap: "8px",
           height: "100%",
         }}
       >
-        Delete
-      </button>
+        <button
+          onClick={() => {}}
+          className="edit-button"
+          style={{
+            backgroundColor: "var(--secondary-text-color)",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            width: `${swipeProgress * 80}px`,
+            transition: isSwiping
+              ? "none"
+              : "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            opacity: swipeProgress,
+            willChange: "width, opacity",
+            height: "100%",
+          }}
+        >
+          Edit
+        </button>
+        <ConfirmationButton
+          onConfirm={onDelete}
+          buttonText="Delete"
+          confirmationText="Are you sure you want to delete this round?"
+          buttonStyle={{
+            backgroundColor: "#ff4444",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            width: `${swipeProgress * 80}px`,
+            transition: isSwiping
+              ? "none"
+              : "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            opacity: swipeProgress,
+            willChange: "width, opacity",
+            height: "100%",
+          }}
+        />
+      </div>
     </div>
   );
 };
