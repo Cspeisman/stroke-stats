@@ -1,23 +1,7 @@
 ---
-import { getSession } from "auth-astro/server";
-import { GolfRound } from "../components/GolfRound";
-import { SignIn } from "../components/SignIn";
-import { RoundService } from "../Round/RoundService";
-import { DBRoundRepository } from "../Round/DBRoundRepository";
-import type { RoundModel } from "../Round/Round";
-import Rounds from "../components/Rounds.tsx";
+import Dashboard from "../components/Dashboard.astro";
+import Loading from "../components/Loading.astro";
 
-const session = await getSession(Astro.request);
-let round: RoundModel | undefined;
-let rounds: RoundModel[] = [];
-
-if (session?.user && session?.user.email) {
-    const roundService = new RoundService(new DBRoundRepository(), session?.user.email);
-    round = await roundService.getActiveRound();
-	if (!round) { 
-		rounds = await roundService.getAllRounds();
-	}
-}
 ---
 
 <html lang="en">
@@ -64,13 +48,9 @@ if (session?.user && session?.user.email) {
 			}
 		</style>
 	</head>
-	<body>
-		{!session && <SignIn client:load />}
-		{session && 
-			<>
-				{round && <GolfRound client:load round={round} />}
-				{!round && <Rounds rounds={rounds} client:load />}
-			</>
-		}
-	</body>
+    <body>
+        <Dashboard server:defer>
+            <Loading slot="fallback" />
+        </Dashboard>
+    </body>
 </html>
