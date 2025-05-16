@@ -8,10 +8,6 @@ import {
   MenuItem,
   Tab,
   Tabs,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Button,
 } from "@mui/material";
 import { useState } from "react";
@@ -19,6 +15,7 @@ import type { HoleModel, RoundModel } from "../Round/Round";
 import "./GolfRound.css";
 import { HoleInputs } from "./HoleInputs";
 import { RoundSummary } from "./RoundSummary";
+import { EndRoundDialog } from "./EndRoundDialog";
 
 export type FairwayStatuses = "Hit" | "Missed" | "-";
 
@@ -94,7 +91,7 @@ export function GolfRound({ round }: { round: RoundModel }) {
     if (currentHole < 18) {
       advanceToNextHole();
     } else {
-      saveRoundData();
+      handleEndRound();
     }
   };
 
@@ -328,29 +325,12 @@ export function GolfRound({ round }: { round: RoundModel }) {
         </Tabs>
       </Box>
 
-      <Dialog
+      <EndRoundDialog
         open={showEndRoundDialog}
-        onClose={handleCancelEndRound}
-        aria-labelledby="end-round-dialog-title"
-      >
-        <DialogTitle id="end-round-dialog-title">End Round</DialogTitle>
-        <DialogContent>
-          Are you sure you want to end your round? You haven't finished all 18
-          holes.
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelEndRound} color="primary">
-            No
-          </Button>
-          <Button
-            onClick={handleConfirmEndRound}
-            color="primary"
-            variant="contained"
-          >
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onCancel={handleCancelEndRound}
+        onConfirm={handleConfirmEndRound}
+        holes={holes}
+      />
     </div>
   );
 }
