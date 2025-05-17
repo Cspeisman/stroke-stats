@@ -146,6 +146,9 @@ const Rounds: React.FC<RoundsProps> = ({ rounds }) => {
             round={round}
             showingPercentages={showingPercentages}
             onDelete={() => handleDelete(round.id)}
+            onEdit={() => {
+              window.location.href = `/rounds/${round.id}`;
+            }}
           />
         ))}
       </div>

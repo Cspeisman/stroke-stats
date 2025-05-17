@@ -1,0 +1,12 @@
+---
+import Dashboard from "../../components/Dashboard.astro";
+import { GolfRound } from "../../components/GolfRound";
+import Loading from "../../components/Loading.astro";
+
+const { params } = Astro;
+const roundId = params.id;
+---
+
+<Dashboard roundId={roundId} server:defer>
+    <Loading slot="fallback" />
+</Dashboard>

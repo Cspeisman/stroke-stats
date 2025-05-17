@@ -7,15 +7,25 @@ import { DBRoundRepository } from "../Round/DBRoundRepository";
 import type { RoundModel } from "../Round/Round";
 import Rounds from "./Rounds.tsx";
 
+// Accept roundId as a prop
+export interface Props {
+  roundId?: string;
+}
+const { roundId } = Astro.props;
+
 const session = await getSession(Astro.request);
 let round: RoundModel | undefined;
 let rounds: RoundModel[] = [];
 
 if (session?.user && session?.user.email) {
     const roundService = new RoundService(new DBRoundRepository(), session?.user.email);
-    round = await roundService.getActiveRound();
-    if (!round) {
-        rounds = await roundService.getAllRounds();
+    if (roundId) {
+        round = await roundService.getRoundById(roundId);
+    } else {
+        round = await roundService.getActiveRound();
+        if (!round) {
+            rounds = await roundService.getAllRounds();
+        }
     }
 }
 ---

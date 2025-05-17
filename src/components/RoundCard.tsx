@@ -33,6 +33,7 @@ export const RoundCard: React.FC<RoundCardProps> = ({
   round,
   showingPercentages,
   onDelete,
+  onEdit,
 }) => {
   const [swipeProgress, setSwipeProgress] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
@@ -161,7 +162,7 @@ export const RoundCard: React.FC<RoundCardProps> = ({
         }}
       >
         <button
-          onClick={() => {}}
+          onClick={onEdit}
           className="edit-button"
           style={{
             backgroundColor: "var(--secondary-text-color)",

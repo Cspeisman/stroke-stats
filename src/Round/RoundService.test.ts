@@ -26,6 +26,9 @@ class FakeRoundRepository implements RoundRepository {
     const activeRounds = this.rounds.filter((round) => round.active);
     return activeRounds[0];
   }
+  async getRoundById(roundId: string): Promise<RoundModel | undefined> {
+    return this.rounds.find((round) => round.id === roundId);
+  }
   async getAllRoundsForUser(testUserId: string) {
     return this.rounds.filter((round) => round.userId === testUserId);
   }
@@ -119,6 +122,32 @@ describe("RoundService", () => {
       expect(await fakeRepository.getAllRoundsForUser(testUserId)).toHaveLength(
         0
       );
+    });
+  });
+
+  describe("getRoundById", () => {
+    it("should return the correct round by id", async () => {
+      const testRound = await fakeRepository.createNewRound(
+        testUserId,
+        "Test Course"
+      );
+      const result = await roundService.getRoundById(testRound.id);
+      expect(result).toEqual(testRound);
+    });
+
+    it("should return undefined for a non-existent round id", async () => {
+      const result = await roundService.getRoundById("non-existent-id");
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe("getAllRounds", () => {
+    it("should return all rounds for the user", async () => {
+      await fakeRepository.createNewRound(testUserId, "Course 1");
+      await fakeRepository.createNewRound(testUserId, "Course 2");
+      const rounds = await roundService.getAllRounds();
+      expect(rounds).toHaveLength(2);
+      expect(rounds.every((r) => r.userId === testUserId)).toBe(true);
     });
   });
 });

@@ -1,4 +1,4 @@
-import { db, eq, Rounds, StrokeStats } from "astro:db";
+import { db, eq, Rounds, StrokeStats, desc } from "astro:db";
 
 import { RoundModel, HoleModel } from "./Round";
 import type { RoundRepository } from "./RoundService";
@@ -36,11 +36,27 @@ export class DBRoundRepository implements RoundRepository {
     return roundModel;
   }
 
+  async getRoundById(roundId: string): Promise<RoundModel | undefined> {
+    return db
+      .select()
+      .from(Rounds)
+      .where(eq(Rounds.id, roundId))
+      .then(async (round) => {
+        if (round.length === 0) {
+          return undefined;
+        }
+        const roundModel = RoundModel.convertFromRound(round[0]);
+        roundModel.holes = await this.getStrokesFromRound(roundModel.id);
+        return roundModel;
+      });
+  }
+
   async getAllRoundsForUser(userId: string): Promise<RoundModel[]> {
     const rounds = await db
       .select()
       .from(Rounds)
-      .where(eq(Rounds.userId, userId));
+      .where(eq(Rounds.userId, userId))
+      .orderBy(desc(Rounds.date));
     return Promise.all(
       rounds.map(async (round) => {
         const roundModel = RoundModel.convertFromRound(round);
