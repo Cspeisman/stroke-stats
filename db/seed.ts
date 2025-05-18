@@ -81,4 +81,29 @@ export default async function seed() {
       roundId: "round-1",
     },
   ]);
+
+  const strokes = new Array(18).fill(0).map((_, i) => {
+    return {
+      id: `id-${i + 1}`,
+      hole: i + 1,
+      par: 4,
+      hitFairway: true,
+      twoPuttOrLess: true,
+      greenInRegulation: true,
+      strokes: 4,
+      notes: "Good drive, solid approach",
+      roundId: "round-2",
+    };
+  });
+
+  const round2 = await db.insert(Rounds).values({
+    id: "round-2",
+    courseName: "Round 2 Course",
+    date: new Date(),
+    active: true,
+    userId: "cspeisman@gmail.com", // Assuming this user exists
+    score: strokes.reduce((acc, stat) => acc + stat.strokes, 0),
+  });
+
+  await db.insert(StrokeStats).values(strokes);
 }

@@ -58,9 +58,13 @@ function RoundSummaryBar({ holes }: { holes: HoleModel[] }) {
 }
 
 export function GolfRound({ round }: { round: RoundModel }) {
-  const [currentHole, setCurrentHole] = useState(round.holes.length + 1);
+  const [currentHole, setCurrentHole] = useState(
+    Math.min(round.holes.length + 1, 18)
+  );
   const [holes, setHoles] = useState<HoleModel[]>(round.holes);
-  const [currentHoleScore, setCurrentHoleScore] = useState<number>(0);
+  const [currentHoleScore, setCurrentHoleScore] = useState<number>(
+    holes[currentHole - 1]?.strokes || 0
+  );
   const [fairwayStatus, setFairwayStatus] = useState<FairwayStatuses>("Missed");
   const [isTwoPuttOrLess, setIsTwoPuttOrLess] = useState(false);
   const [isGreenInRegulation, setIsGreenInRegulation] = useState(false);
@@ -315,6 +319,19 @@ export function GolfRound({ round }: { round: RoundModel }) {
         <RoundSummary holes={holes} currentHole={currentHole} />
       )}
 
+      {holes.length === 18 && holes.every((h) => h.strokes > 0) && (
+        <Button
+          style={{
+            background: "var(--secondary-color)",
+            color: "white",
+            padding: "10px 20px",
+            marginTop: "20px",
+          }}
+          onClick={handleEndRound}
+        >
+          Save Round
+        </Button>
+      )}
       <Box
         className="tab-selector"
         sx={{ borderTop: 1, borderColor: "divider", mt: 2 }}
